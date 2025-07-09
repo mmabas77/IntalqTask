@@ -151,7 +151,15 @@ function validateExamRequirements() {
     
     // Check if all fields are filled including title
     const examTitle = $('#title').val().trim();
-    const allFieldsFilled = Object.values(requirements).every(v => v > 0) && examTitle.length > 0;
+    const numericFields = [
+        requirements.questionsPerChapter,
+        requirements.simpleQuestions,
+        requirements.difficultQuestions,
+        requirements.remindingQuestions,
+        requirements.understandingQuestions,
+        requirements.creativityQuestions
+    ];
+    const allFieldsFilled = numericFields.every(v => v > 0) && examTitle.length > 0;
     if (!allFieldsFilled) {
         $('#generateBtn').prop('disabled', true);
         return;
@@ -208,7 +216,6 @@ function updateValidationDisplay(isValid, errors) {
     
     if (errors.length === 0) {
         validationDiv.hide();
-        $('#generateBtn').prop('disabled', false);
         return;
     }
     
