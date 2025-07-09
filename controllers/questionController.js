@@ -70,8 +70,8 @@ class QuestionController {
 
     // Store new question
     async store(req, res) {
+        const { chapterId } = req.params;
         try {
-            const { chapterId } = req.params;
             const chapter = await Chapter.findById(chapterId).populate('courseId');
             
             if (!chapter) {
@@ -125,7 +125,15 @@ class QuestionController {
             }
 
             // Check objective distribution constraint
-            const currentObjectiveCounts = await this.getObjectiveCounts(chapterId);
+            const questions = await Question.find({ chapterId: chapterId });
+            const currentObjectiveCounts = {
+                reminding: 0,
+                understanding: 0,
+                creativity: 0
+            };
+            questions.forEach(q => {
+                currentObjectiveCounts[q.objective]++;
+            });
             if (currentObjectiveCounts[objective] >= 4) {
                 return res.render('questions/create', {
                     title: 'Add New Question',
@@ -153,7 +161,11 @@ class QuestionController {
             res.redirect(`/questions/chapter/${chapterId}`);
         } catch (error) {
             console.error('Error creating question:', error);
-            req.flash('error', 'Error creating question');
+            console.error('Question data:', {
+                chapterId,
+                requestBody: req.body
+            });
+            req.flash('error', 'Error creating question: ' + error.message);
             res.redirect(`/questions/chapter/${chapterId}`);
         }
     }

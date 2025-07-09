@@ -95,7 +95,7 @@
                                                     </form>
                                                 </div>
                                             </div>
-                                            <p class="card-text"><%= question.text.substring(0, 100) %><%= question.text.length > 100 ? '...' : '' %></p>
+                                            <p class="card-text"><%= question.questionText.substring(0, 100) %><%= question.questionText.length > 100 ? '...' : '' %></p>
                                             <small class="text-muted">
                                                 <i class="fas fa-clock me-1"></i>
                                                 Created: <%= new Date(question.createdAt).toLocaleDateString() %>
