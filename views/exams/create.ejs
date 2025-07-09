@@ -1,0 +1,283 @@
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i>Generate New Exam
+                </h3>
+            </div>
+            <div class="card-body">
+                <form id="examForm" action="/exams/generate" method="POST">
+                    <!-- Course Selection -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-book me-2"></i>Course Selection</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="courseSelect" class="form-label">Select Course *</label>
+                                <select class="form-select <%= errors.courseId ? 'is-invalid' : '' %>" 
+                                        id="courseSelect" 
+                                        name="courseId" 
+                                        required>
+                                    <option value="">Choose a course...</option>
+                                    <% courses.forEach(course => { %>
+                                        <option value="<%= course._id %>" 
+                                                data-chapters="<%= course.numberOfChapters %>"
+                                                <%= selectedCourse && selectedCourse._id.toString() === course._id.toString() ? 'selected' : '' %>>
+                                            <%= course.name %> (<%= course.numberOfChapters %> chapters)
+                                        </option>
+                                    <% }); %>
+                                </select>
+                                <% if (errors.courseId) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.courseId.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="title" class="form-label">Exam Title *</label>
+                                <input type="text" 
+                                       class="form-control <%= errors.title ? 'is-invalid' : '' %>" 
+                                       id="title" 
+                                       name="title" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.title : '' %>"
+                                       placeholder="Enter exam title"
+                                       required>
+                                <% if (errors.title) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.title.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Information -->
+                    <div id="courseInfo" class="alert alert-info" style="display: none;">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+
+                    <!-- Question Distribution -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-chart-pie me-2"></i>Question Distribution</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="questionsPerChapter" class="form-label">Questions per Chapter *</label>
+                                <input type="number" 
+                                       class="form-control exam-requirement <%= errors.questionsPerChapter ? 'is-invalid' : '' %>" 
+                                       id="questionsPerChapter" 
+                                       name="questionsPerChapter" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.questionsPerChapter : '' %>"
+                                       min="1" 
+                                       max="12"
+                                       placeholder="e.g., 5"
+                                       required>
+                                <% if (errors.questionsPerChapter) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.questionsPerChapter.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-text">
+                                    <strong>Total Questions:</strong> <span id="totalQuestions">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Difficulty Distribution -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-signal me-2"></i>Difficulty Distribution</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="simpleQuestions" class="form-label">Simple Questions *</label>
+                                <input type="number" 
+                                       class="form-control exam-requirement <%= errors.simpleQuestions ? 'is-invalid' : '' %>" 
+                                       id="simpleQuestions" 
+                                       name="simpleQuestions" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.simpleQuestions : '' %>"
+                                       min="0"
+                                       placeholder="e.g., 15"
+                                       required>
+                                <% if (errors.simpleQuestions) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.simpleQuestions.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="difficultQuestions" class="form-label">Difficult Questions *</label>
+                                <input type="number" 
+                                       class="form-control exam-requirement <%= errors.difficultQuestions ? 'is-invalid' : '' %>" 
+                                       id="difficultQuestions" 
+                                       name="difficultQuestions" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.difficultQuestions : '' %>"
+                                       min="0"
+                                       placeholder="e.g., 10"
+                                       required>
+                                <% if (errors.difficultQuestions) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.difficultQuestions.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Objective Distribution -->
+                    <div class="form-section">
+                        <h4><i class="fas fa-bullseye me-2"></i>Objective Distribution</h4>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="remindingQuestions" class="form-label">Reminding Questions *</label>
+                                <input type="number" 
+                                       class="form-control exam-requirement <%= errors.remindingQuestions ? 'is-invalid' : '' %>" 
+                                       id="remindingQuestions" 
+                                       name="remindingQuestions" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.remindingQuestions : '' %>"
+                                       min="0"
+                                       placeholder="e.g., 8"
+                                       required>
+                                <% if (errors.remindingQuestions) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.remindingQuestions.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="understandingQuestions" class="form-label">Understanding Questions *</label>
+                                <input type="number" 
+                                       class="form-control exam-requirement <%= errors.understandingQuestions ? 'is-invalid' : '' %>" 
+                                       id="understandingQuestions" 
+                                       name="understandingQuestions" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.understandingQuestions : '' %>"
+                                       min="0"
+                                       placeholder="e.g., 9"
+                                       required>
+                                <% if (errors.understandingQuestions) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.understandingQuestions.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="creativityQuestions" class="form-label">Creativity Questions *</label>
+                                <input type="number" 
+                                       class="form-control exam-requirement <%= errors.creativityQuestions ? 'is-invalid' : '' %>" 
+                                       id="creativityQuestions" 
+                                       name="creativityQuestions" 
+                                       value="<%= typeof oldInput !== 'undefined' ? oldInput.creativityQuestions : '' %>"
+                                       min="0"
+                                       placeholder="e.g., 8"
+                                       required>
+                                <% if (errors.creativityQuestions) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.creativityQuestions.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Results -->
+                    <div id="validationResults" style="display: none;"></div>
+
+                    <!-- Error Display -->
+                    <% if (errors.difficulty) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <%= errors.difficulty.msg %>
+                        </div>
+                    <% } %>
+
+                    <% if (errors.objective) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <%= errors.objective.msg %>
+                        </div>
+                    <% } %>
+
+                    <% if (errors.insufficient) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <%= errors.insufficient.msg %>
+                            <% if (errors.insufficient.details) { %>
+                                <ul class="mt-2">
+                                    <% errors.insufficient.details.forEach(detail => { %>
+                                        <li>Chapter <%= detail.chapter.chapterNumber %>: <%= detail.available %>/<%= detail.required %> questions available</li>
+                                    <% }); %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <% if (errors.algorithm) { %>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <%= errors.algorithm.msg %>
+                            <% if (errors.algorithm.details) { %>
+                                <ul class="mt-2">
+                                    <% errors.algorithm.details.forEach(detail => { %>
+                                        <li><%= detail %></li>
+                                    <% }); %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    <% } %>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="/exams" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" id="generateBtn" class="btn btn-primary" disabled>
+                            <i class="fas fa-cogs me-2"></i>Generate Exam
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Exam Generation Help
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-dna me-2 text-primary"></i>Genetic Algorithm</h6>
+                        <p>Our system uses an advanced genetic algorithm to find the optimal combination of questions that best matches your requirements.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-balance-scale me-2 text-success"></i>Balance Requirements</h6>
+                        <p>Ensure the sum of difficulty questions equals total questions, and the sum of objective questions equals total questions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Calculate total questions when inputs change
+    function updateTotalQuestions() {
+        const questionsPerChapter = parseInt($('#questionsPerChapter').val()) || 0;
+        const selectedCourse = $('#courseSelect option:selected');
+        const chapters = parseInt(selectedCourse.data('chapters')) || 0;
+        const total = questionsPerChapter * chapters;
+        $('#totalQuestions').text(total);
+    }
+
+    $('#questionsPerChapter, #courseSelect').on('change input', updateTotalQuestions);
+    
+    // Load course info if already selected
+    if ($('#courseSelect').val()) {
+        loadCourseInfo($('#courseSelect').val());
+        updateTotalQuestions();
+    }
+});
+</script>

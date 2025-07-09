@@ -1,0 +1,176 @@
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-plus me-2"></i>Create New Question
+                </h3>
+                <p class="text-muted mb-0">
+                    Course: <%= chapter.courseId.name %> | Chapter: <%= chapter.chapterNumber %>
+                </p>
+            </div>
+            <div class="card-body">
+                <form action="/questions/chapter/<%= chapter._id %>" method="POST">
+                    <input type="hidden" name="courseId" value="<%= chapter.courseId._id %>">
+                    <input type="hidden" name="chapterId" value="<%= chapter._id %>">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="objective" class="form-label">Question Objective *</label>
+                                <select class="form-select <%= errors && errors.objective ? 'is-invalid' : '' %>" 
+                                        id="objective" 
+                                        name="objective" 
+                                        required>
+                                    <option value="">Select objective type</option>
+                                    <option value="reminding" <%= (typeof oldInput !== 'undefined' && oldInput.objective === 'reminding') || (typeof objective !== 'undefined' && objective === 'reminding') ? 'selected' : '' %>>
+                                        <i class="fas fa-brain"></i> Reminding
+                                    </option>
+                                    <option value="understanding" <%= (typeof oldInput !== 'undefined' && oldInput.objective === 'understanding') || (typeof objective !== 'undefined' && objective === 'understanding') ? 'selected' : '' %>>
+                                        <i class="fas fa-lightbulb"></i> Understanding
+                                    </option>
+                                    <option value="creativity" <%= (typeof oldInput !== 'undefined' && oldInput.objective === 'creativity') || (typeof objective !== 'undefined' && objective === 'creativity') ? 'selected' : '' %>>
+                                        <i class="fas fa-magic"></i> Creativity
+                                    </option>
+                                </select>
+                                <% if (errors && errors.objective) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.objective.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="difficulty" class="form-label">Difficulty Level *</label>
+                                <select class="form-select <%= errors && errors.difficulty ? 'is-invalid' : '' %>" 
+                                        id="difficulty" 
+                                        name="difficulty" 
+                                        required>
+                                    <option value="">Select difficulty</option>
+                                    <option value="easy" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'easy' ? 'selected' : '' %>>Easy</option>
+                                    <option value="medium" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'medium' ? 'selected' : '' %>>Medium</option>
+                                    <option value="hard" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'hard' ? 'selected' : '' %>>Hard</option>
+                                </select>
+                                <% if (errors && errors.difficulty) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.difficulty.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Question Text *</label>
+                        <textarea class="form-control <%= errors && errors.text ? 'is-invalid' : '' %>" 
+                                  id="text" 
+                                  name="text" 
+                                  rows="3" 
+                                  placeholder="Enter your question here..."
+                                  required><%= typeof oldInput !== 'undefined' ? oldInput.text : '' %></textarea>
+                        <% if (errors && errors.text) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.text.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Answer Options *</label>
+                        <div id="options-container">
+                            <% for (let i = 0; i < 4; i++) { %>
+                                <div class="option-item mb-2">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <%= String.fromCharCode(65 + i) %>.
+                                        </span>
+                                        <input type="text" 
+                                               class="form-control <%= errors && errors['options.' + i + '.text'] ? 'is-invalid' : '' %>" 
+                                               name="options[<%= i %>][text]" 
+                                               placeholder="Option <%= String.fromCharCode(65 + i) %>"
+                                               value="<%= typeof oldInput !== 'undefined' && oldInput.options && oldInput.options[i] ? oldInput.options[i].text : '' %>"
+                                               required>
+                                        <div class="input-group-text">
+                                            <input type="radio" 
+                                                   name="correctOption" 
+                                                   value="<%= i %>"
+                                                   <%= typeof oldInput !== 'undefined' && oldInput.correctOption == i ? 'checked' : '' %>
+                                                   required>
+                                            <label class="form-check-label ms-1">Correct</label>
+                                        </div>
+                                    </div>
+                                    <% if (errors && errors['options.' + i + '.text']) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= errors['options.' + i + '.text'].msg %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Select the radio button next to the correct answer option.
+                        </small>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Tips for creating good questions:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li><strong>Reminding:</strong> Test factual recall and basic knowledge</li>
+                            <li><strong>Understanding:</strong> Test comprehension and application of concepts</li>
+                            <li><strong>Creativity:</strong> Test analysis, synthesis, and higher-order thinking</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/questions/chapter/<%= chapter._id %>" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Create Question
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Question Count Status -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Chapter <%= chapter.chapterNumber %> Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-primary mb-0"><%= chapter.questionCount || 0 %></h4>
+                            <small class="text-muted">Total Questions</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-info mb-0">-</h4>
+                            <small class="text-muted">Reminding (4 needed)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-success mb-0">-</h4>
+                            <small class="text-muted">Understanding (4 needed)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-warning mb-0">-</h4>
+                            <small class="text-muted">Creativity (4 needed)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

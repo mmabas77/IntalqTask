@@ -1,0 +1,12 @@
+<div class="text-center mt-5">
+    <h1 class="display-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Server Error</h1>
+    <p class="lead text-muted">An unexpected error occurred. Please try again, or contact support if the problem persists.</p>
+    <% if (error) { %>
+        <div class="alert alert-danger mt-4 d-inline-block">
+            <strong>Error details:</strong> <%= error %>
+        </div>
+    <% } %>
+    <div class="mt-4">
+        <a href="/" class="btn btn-primary"><i class="fas fa-home me-2"></i>Back to Home</a>
+    </div>
+</div>

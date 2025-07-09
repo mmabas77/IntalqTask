@@ -1,0 +1,172 @@
+<div class="hero-section bg-primary text-white py-5 mb-5 rounded">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Exam Design System</h1>
+                <p class="lead mb-4">
+                    Create intelligent exams with our advanced genetic algorithm-based question selection system. 
+                    Design courses, manage questions, and generate optimized exams effortlessly.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/courses" class="btn btn-light btn-lg">
+                        <i class="fas fa-book me-2"></i>Manage Courses
+                    </a>
+                    <a href="/exams/create" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-plus me-2"></i>Create Exam
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-graduation-cap display-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-book fa-2x"></i>
+                </div>
+                <h4 class="card-title">Course Management</h4>
+                <p class="card-text">
+                    Create and manage courses with customizable chapters. Each chapter can contain up to 12 questions 
+                    with balanced distribution across difficulty levels and learning objectives.
+                </p>
+                <a href="/courses" class="btn btn-primary">
+                    <i class="fas fa-arrow-right me-2"></i>View Courses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-question-circle fa-2x"></i>
+                </div>
+                <h4 class="card-title">Question Library</h4>
+                <p class="card-text">
+                    Build comprehensive question banks with multiple choice questions. Organize by difficulty 
+                    (simple/difficult) and learning objectives (reminding/understanding/creativity).
+                </p>
+                <a href="/courses" class="btn btn-success">
+                    <i class="fas fa-arrow-right me-2"></i>Manage Questions
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                    <i class="fas fa-clipboard-list fa-2x"></i>
+                </div>
+                <h4 class="card-title">Intelligent Exam Generation</h4>
+                <p class="card-text">
+                    Generate optimized exams using genetic algorithms. Specify your requirements and let our system 
+                    select the best combination of questions to meet your criteria.
+                </p>
+                <a href="/exams" class="btn btn-warning">
+                    <i class="fas fa-arrow-right me-2"></i>View Exams
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">Key Features</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="d-flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-success fa-2x"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5>Balanced Question Distribution</h5>
+                <p>Ensure equal distribution of question types across all chapters with automatic validation.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="d-flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-dna text-info fa-2x"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5>Genetic Algorithm Optimization</h5>
+                <p>Advanced AI-powered question selection for optimal exam composition.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="d-flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-chart-bar text-warning fa-2x"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5>Real-time Statistics</h5>
+                <p>Monitor question distribution and exam quality with comprehensive analytics.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="d-flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-print text-secondary fa-2x"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5>Export & Print</h5>
+                <p>Generate printable exam formats ready for distribution to students.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h3>Ready to Get Started?</h3>
+                <p class="lead">Create your first course and start building your question library today!</p>
+                <a href="/courses/create" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Create Your First Course
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>

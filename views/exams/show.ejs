@@ -1,0 +1,140 @@
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="fas fa-file-alt me-2"></i><%= exam.title %>
+            </h1>
+            <div class="btn-group">
+                <a href="/exams/<%= exam._id %>/export" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Export for Printing
+                </a>
+                <a href="/exams" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Exams
+                </a>
+            </div>
+        </div>
+
+        <!-- Exam Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Exam Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Course:</strong> <%= exam.courseId.name %></p>
+                        <p><strong>Duration:</strong> <%= exam.duration %> minutes</p>
+                        <p><strong>Total Questions:</strong> <%= questions.length %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Created:</strong> <%= new Date(exam.createdAt).toLocaleDateString() %></p>
+                        <p><strong>Chapters Covered:</strong> <%= [...new Set(questions.map(q => q.chapterId.chapterNumber))].length %></p>
+                        <p><strong>Fitness Score:</strong> <%= exam.fitnessScore ? exam.fitnessScore.toFixed(2) : 'N/A' %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Distribution -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Question Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <h4 class="text-info mb-0">
+                                <i class="fas fa-brain me-2"></i>
+                                <%= questions.filter(q => q.objective === 'reminding').length %>
+                            </h4>
+                            <small class="text-muted">Reminding Questions</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <h4 class="text-success mb-0">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <%= questions.filter(q => q.objective === 'understanding').length %>
+                            </h4>
+                            <small class="text-muted">Understanding Questions</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3">
+                            <h4 class="text-warning mb-0">
+                                <i class="fas fa-magic me-2"></i>
+                                <%= questions.filter(q => q.objective === 'creativity').length %>
+                            </h4>
+                            <small class="text-muted">Creativity Questions</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions List -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Questions
+                </h5>
+            </div>
+            <div class="card-body">
+                <% if (questions && questions.length > 0) { %>
+                    <% questions.forEach((question, index) => { %>
+                        <div class="question-item mb-4 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">
+                                    <span class="badge bg-primary me-2"><%= index + 1 %></span>
+                                    <% if (question.objective === 'reminding') { %>
+                                        <span class="badge bg-info me-2">
+                                            <i class="fas fa-brain me-1"></i>Reminding
+                                        </span>
+                                    <% } else if (question.objective === 'understanding') { %>
+                                        <span class="badge bg-success me-2">
+                                            <i class="fas fa-lightbulb me-1"></i>Understanding
+                                        </span>
+                                    <% } else if (question.objective === 'creativity') { %>
+                                        <span class="badge bg-warning me-2">
+                                            <i class="fas fa-magic me-1"></i>Creativity
+                                        </span>
+                                    <% } %>
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-bookmark me-1"></i>Chapter <%= question.chapterId.chapterNumber %>
+                                    </span>
+                                </h6>
+                                <small class="text-muted">Difficulty: <%= question.difficulty %></small>
+                            </div>
+                            <p class="question-text"><%= question.questionText %></p>
+                            <% if (question.choices && question.choices.length > 0) { %>
+                                <div class="options">
+                                    <% question.choices.forEach((choice, optIndex) => { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" disabled <%= optIndex == question.correctAnswer ? 'checked' : '' %>>
+                                            <label class="form-check-label <%= optIndex == question.correctAnswer ? 'text-success fw-bold' : '' %>">
+                                                <%= String.fromCharCode(65 + optIndex) %>. <%= choice %>
+                                                <% if (optIndex == question.correctAnswer) { %>
+                                                    <i class="fas fa-check text-success ms-1"></i>
+                                                <% } %>
+                                            </label>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="text-center py-4">
+                        <i class="fas fa-question-circle fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">No questions in this exam</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

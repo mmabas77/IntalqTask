@@ -1,0 +1,108 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>Edit Course
+                </h3>
+            </div>
+            <div class="card-body">
+                <form action="/courses/<%= course._id %>?_method=PUT" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Course Name *</label>
+                        <input type="text" 
+                               class="form-control <%= errors && errors.name ? 'is-invalid' : '' %>" 
+                               id="name" 
+                               name="name" 
+                               value="<%= course.name %>"
+                               placeholder="Enter course name"
+                               required>
+                        <% if (errors && errors.name) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.name.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="numberOfChapters" class="form-label">Number of Chapters *</label>
+                        <input type="number" 
+                               class="form-control <%= errors && errors.numberOfChapters ? 'is-invalid' : '' %>" 
+                               id="numberOfChapters" 
+                               name="numberOfChapters" 
+                               value="<%= course.numberOfChapters %>"
+                               min="1" 
+                               max="50"
+                               placeholder="Enter number of chapters"
+                               required>
+                        <% if (errors && errors.numberOfChapters) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.numberOfChapters.msg %>
+                            </div>
+                        <% } %>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>Warning:</strong> Decreasing the number of chapters will permanently delete chapters and their questions.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> 
+                        <ul class="mb-0 mt-2">
+                            <li>Changing the number of chapters will affect existing questions</li>
+                            <li>If you decrease chapters, questions in removed chapters will be lost</li>
+                            <li>If you increase chapters, new empty chapters will be created</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/courses/<%= course._id %>" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Course Statistics -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Course Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-primary mb-0"><%= course.numberOfChapters %></h4>
+                            <small class="text-muted">Total Chapters</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-success mb-0">-</h4>
+                            <small class="text-muted">Total Questions</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-info mb-0">-</h4>
+                            <small class="text-muted">Completed Chapters</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <h4 class="text-warning mb-0">-</h4>
+                            <small class="text-muted">Incomplete Chapters</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= exam.title %> - Exam Export</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .exam-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .exam-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .exam-info {
+            font-size: 14px;
+            color: #666;
+        }
+        .student-info {
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 30px;
+            background-color: #f9f9f9;
+        }
+        .student-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student-info td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            width: 50%;
+        }
+        .question {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+        .question-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .question-text {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .option {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .option-letter {
+            width: 20px;
+            font-weight: bold;
+        }
+        .answer-sheet {
+            page-break-before: always;
+            margin-top: 40px;
+        }
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .answer-item {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        @media print {
+            body {
+                margin: 0;
+                font-size: 12px;
+            }
+            .exam-header {
+                margin-bottom: 20px;
+            }
+            .question {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Exam Header -->
+    <div class="exam-header">
+        <div class="exam-title"><%= exam.title %></div>
+        <div class="exam-info">
+            Course: <%= exam.courseId.name %> | 
+            Duration: <%= exam.duration %> minutes | 
+            Total Questions: <%= questions.length %> |
+            Date: <%= new Date().toLocaleDateString() %>
+        </div>
+    </div>
+
+    <!-- Student Information -->
+    <div class="student-info">
+        <h3>Student Information</h3>
+        <table>
+            <tr>
+                <td><strong>Name:</strong> _________________________</td>
+                <td><strong>Student ID:</strong> _________________________</td>
+            </tr>
+            <tr>
+                <td><strong>Date:</strong> _________________________</td>
+                <td><strong>Signature:</strong> _________________________</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Instructions -->
+    <div style="border: 1px solid #333; padding: 15px; margin-bottom: 30px; background-color: #f0f0f0;">
+        <h3>Instructions:</h3>
+        <ul>
+            <li>Read each question carefully before answering</li>
+            <li>Choose the best answer for each question</li>
+            <li>Mark your answers clearly on the answer sheet</li>
+            <li>Time limit: <%= exam.duration %> minutes</li>
+            <li>Total questions: <%= questions.length %></li>
+        </ul>
+    </div>
+
+    <!-- Questions -->
+    <% questions.forEach((question, index) => { %>
+        <div class="question">
+            <div class="question-header">
+                Question <%= index + 1 %>
+                <span style="float: right; font-size: 12px; color: #666;">
+                    [<%= question.objective.charAt(0).toUpperCase() + question.objective.slice(1) %> | 
+                    Chapter <%= question.chapterId.chapterNumber %> | 
+                    Difficulty: <%= question.difficulty %>]
+                </span>
+            </div>
+            <div class="question-text">
+                <%= question.questionText %>
+            </div>
+            <% if (question.choices && question.choices.length > 0) { %>
+                <div class="options">
+                    <% question.choices.forEach((choice, optIndex) => { %>
+                        <div class="option">
+                            <span class="option-letter"><%= String.fromCharCode(65 + optIndex) %>.</span>
+                            <span><%= choice %></span>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    <% }); %>
+
+    <!-- Answer Sheet -->
+    <div class="answer-sheet">
+        <h2 style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px;">Answer Sheet</h2>
+        <p style="text-align: center; margin-bottom: 20px;">
+            <strong>Instructions:</strong> Fill in the circle completely for your chosen answer.
+        </p>
+        
+        <div class="answer-grid">
+            <% questions.forEach((question, index) => { %>
+                <div class="answer-item">
+                    <div style="font-size: 14px; margin-bottom: 5px;">Q<%= index + 1 %></div>
+                    <div style="display: flex; justify-content: center; gap: 8px;">
+                        <% if (question.choices && question.choices.length > 0) { %>
+                            <% question.choices.forEach((choice, optIndex) => { %>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-size: 10px;"><%= String.fromCharCode(65 + optIndex) %></span>
+                                    <div style="width: 12px; height: 12px; border: 1px solid #333; border-radius: 50%; margin-top: 2px;"></div>
+                                </div>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <!-- Answer Key (for instructor use) -->
+    <div style="page-break-before: always; margin-top: 40px; border: 2px solid #333; padding: 20px;">
+        <h2 style="text-align: center; color: #d32f2f;">ANSWER KEY - FOR INSTRUCTOR USE ONLY</h2>
+        <div style="columns: 2; column-gap: 40px;">
+            <% questions.forEach((question, index) => { %>
+                <div style="margin-bottom: 10px; break-inside: avoid;">
+                    <strong>Q<%= index + 1 %>:</strong> 
+                    <% if (question.choices && question.choices.length > 0) { %>
+                        <% if (question.correctAnswer !== undefined && question.correctAnswer !== null) { %>
+                            <span style="color: #2e7d32; font-weight: bold;">
+                                <%= String.fromCharCode(65 + question.correctAnswer) %>
+                            </span>
+                        <% } else { %>
+                            <span style="color: #d32f2f;">No correct answer marked</span>
+                        <% } %>
+                    <% } else { %>
+                        <span style="color: #d32f2f;">No options available</span>
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script>
+        // Auto-print when page loads
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>

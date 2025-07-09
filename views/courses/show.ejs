@@ -1,0 +1,193 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1><i class="fas fa-book me-2"></i><%= course.name %></h1>
+        <p class="text-muted mb-0">
+            <i class="fas fa-list me-2"></i>
+            <%= course.numberOfChapters %> chapters • 
+            Created <%= course.createdAt.toLocaleDateString() %>
+        </p>
+    </div>
+    <div class="btn-group">
+        <a href="/courses/<%= course._id %>/edit" class="btn btn-outline-warning">
+            <i class="fas fa-edit me-2"></i>Edit Course
+        </a>
+        <a href="/exams/create?courseId=<%= course._id %>" class="btn btn-success">
+            <i class="fas fa-clipboard-list me-2"></i>Generate Exam
+        </a>
+    </div>
+</div>
+
+<!-- Course Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>Total Questions</h4>
+                        <h2><%= chapters.reduce((sum, ch) => sum + ch.questionCount, 0) %></h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-question-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>Complete Chapters</h4>
+                        <h2><%= chapters.filter(ch => ch.isComplete).length %></h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>In Progress</h4>
+                        <h2><%= chapters.filter(ch => !ch.isComplete && ch.questionCount > 0).length %></h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-hourglass-half fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>Empty Chapters</h4>
+                        <h2><%= chapters.filter(ch => ch.questionCount === 0).length %></h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-plus-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chapters List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-list me-2"></i>Chapters
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <% chapters.forEach(chapter => { %>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 <%= chapter.isComplete ? 'border-success' : (chapter.questionCount > 0 ? 'border-warning' : 'border-danger') %>">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h6 class="card-title">
+                                    <i class="fas fa-bookmark me-2"></i>
+                                    <%= chapter.title %>
+                                </h6>
+                                <span class="badge bg-<%= chapter.isComplete ? 'success' : (chapter.questionCount > 0 ? 'warning' : 'danger') %>">
+                                    <%= chapter.questionCount %>/12
+                                </span>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-<%= chapter.isComplete ? 'success' : (chapter.questionCount > 0 ? 'warning' : 'danger') %>" 
+                                     style="width: <%= (chapter.questionCount / 12) * 100 %>%">
+                                </div>
+                            </div>
+                            
+                            <!-- Question Distribution -->
+                            <div class="mb-3">
+                                <small class="text-muted">Difficulty Distribution:</small><br>
+                                <span class="badge bg-success me-1">
+                                    Simple: <%= chapter.difficultyCount.simple %>
+                                </span>
+                                <span class="badge bg-danger">
+                                    Difficult: <%= chapter.difficultyCount.difficult %>
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">Objective Distribution:</small><br>
+                                <span class="badge bg-info me-1">
+                                    R: <%= chapter.objectiveCount.reminding %>
+                                </span>
+                                <span class="badge bg-warning text-dark me-1">
+                                    U: <%= chapter.objectiveCount.understanding %>
+                                </span>
+                                <span class="badge bg-secondary">
+                                    C: <%= chapter.objectiveCount.creativity %>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100">
+                                <a href="/questions/chapter/<%= chapter._id %>" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                                <a href="/questions/chapter/<%= chapter._id %>/create" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>Quick Actions</h5>
+                <div class="btn-group me-3">
+                    <a href="/courses" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Courses
+                    </a>
+                    <a href="/courses/<%= course._id %>/edit" class="btn btn-outline-warning">
+                        <i class="fas fa-edit me-2"></i>Edit Course
+                    </a>
+                </div>
+                <div class="btn-group">
+                    <a href="/exams/create?courseId=<%= course._id %>" class="btn btn-success">
+                        <i class="fas fa-clipboard-list me-2"></i>Generate Exam
+                    </a>
+                    <button class="btn btn-outline-danger" onclick="deleteCourse('<%= course._id %>', '<%= course.name %>')">
+                        <i class="fas fa-trash me-2"></i>Delete Course
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteCourse(courseId, courseName) {
+    if (confirm(`Are you sure you want to delete "${courseName}"? This will permanently remove all chapters and questions.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/courses/${courseId}?_method=DELETE`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>

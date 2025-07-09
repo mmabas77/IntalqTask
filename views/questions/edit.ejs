@@ -1,0 +1,208 @@
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>Edit Question
+                </h3>
+                <p class="text-muted mb-0">
+                    Course: <%= question.chapterId.courseId.name %> | Chapter: <%= question.chapterId.chapterNumber %>
+                </p>
+            </div>
+            <div class="card-body">
+                <form action="/questions/<%= question._id %>?_method=PUT" method="POST">
+                    <input type="hidden" name="courseId" value="<%= question.chapterId.courseId._id %>">
+                    <input type="hidden" name="chapterId" value="<%= question.chapterId._id %>">
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="objective" class="form-label">Question Objective *</label>
+                                <select class="form-select <%= errors && errors.objective ? 'is-invalid' : '' %>" 
+                                        id="objective" 
+                                        name="objective" 
+                                        required>
+                                    <option value="">Select objective type</option>
+                                    <option value="reminding" <%= question.objective === 'reminding' ? 'selected' : '' %>>
+                                        <i class="fas fa-brain"></i> Reminding
+                                    </option>
+                                    <option value="understanding" <%= question.objective === 'understanding' ? 'selected' : '' %>>
+                                        <i class="fas fa-lightbulb"></i> Understanding
+                                    </option>
+                                    <option value="creativity" <%= question.objective === 'creativity' ? 'selected' : '' %>>
+                                        <i class="fas fa-magic"></i> Creativity
+                                    </option>
+                                </select>
+                                <% if (errors && errors.objective) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.objective.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="difficulty" class="form-label">Difficulty Level *</label>
+                                <select class="form-select <%= errors && errors.difficulty ? 'is-invalid' : '' %>" 
+                                        id="difficulty" 
+                                        name="difficulty" 
+                                        required>
+                                    <option value="">Select difficulty</option>
+                                    <option value="simple" <%= question.difficulty === 'simple' ? 'selected' : '' %>>Simple</option>
+                                    <option value="difficult" <%= question.difficulty === 'difficult' ? 'selected' : '' %>>Difficult</option>
+                                </select>
+                                <% if (errors && errors.difficulty) { %>
+                                    <div class="invalid-feedback">
+                                        <%= errors.difficulty.msg %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Question Text *</label>
+                        <textarea class="form-control <%= errors && errors.text ? 'is-invalid' : '' %>" 
+                                  id="text" 
+                                  name="text" 
+                                  rows="3" 
+                                  placeholder="Enter your question here..."
+                                  required><%= question.questionText %></textarea>
+                        <% if (errors && errors.text) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.text.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Answer Options *</label>
+                        <div id="options-container">
+                            <% for (let i = 0; i < 4; i++) { %>
+                                <div class="option-item mb-2">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <%= String.fromCharCode(65 + i) %>.
+                                        </span>
+                                        <input type="text" 
+                                               class="form-control <%= errors && errors['options.' + i + '.text'] ? 'is-invalid' : '' %>" 
+                                               name="options[<%= i %>][text]" 
+                                               placeholder="Option <%= String.fromCharCode(65 + i) %>"
+                                               value="<%= question.choices[i] ? question.choices[i] : '' %>"
+                                               required>
+                                        <div class="input-group-text">
+                                            <input type="radio" 
+                                                   name="correctOption" 
+                                                   value="<%= i %>"
+                                                   <%= question.correctAnswer == i ? 'checked' : '' %>
+                                                   required>
+                                            <label class="form-check-label ms-1">Correct</label>
+                                        </div>
+                                    </div>
+                                    <% if (errors && errors['options.' + i + '.text']) { %>
+                                        <div class="invalid-feedback d-block">
+                                            <%= errors['options.' + i + '.text'].msg %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Select the radio button next to the correct answer option.
+                        </small>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Tips for creating good questions:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li><strong>Reminding:</strong> Test factual recall and basic knowledge</li>
+                            <li><strong>Understanding:</strong> Test comprehension and application of concepts</li>
+                            <li><strong>Creativity:</strong> Test analysis, synthesis, and higher-order thinking</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/questions/<%= question._id %>" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Question
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Question Preview -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-eye me-2"></i>Current Question Preview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="exam-preview p-3 border rounded">
+                    <div class="question-header mb-3">
+                        <strong>Question Preview</strong>
+                        <span class="float-end text-muted">
+                            [<%= question.objective.charAt(0).toUpperCase() + question.objective.slice(1) %> | 
+                            Chapter <%= question.chapterId.chapterNumber %> | 
+                            <%= question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1) %>]
+                        </span>
+                    </div>
+                    <div class="question-text mb-3">
+                        <%= question.questionText %>
+                    </div>
+                    <% if (question.choices && question.choices.length > 0) { %>
+                        <div class="options">
+                            <% question.choices.forEach((choice, index) => { %>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" disabled <%= index == question.correctAnswer ? 'checked' : '' %>>
+                                    <label class="form-check-label <%= index == question.correctAnswer ? 'text-success fw-bold' : '' %>">
+                                        <strong><%= String.fromCharCode(65 + index) %>.</strong> <%= choice %>
+                                        <% if (index == question.correctAnswer) { %>
+                                            <i class="fas fa-check text-success ms-1"></i>
+                                        <% } %>
+                                    </label>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Statistics -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Question Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <p class="text-muted mb-1">Created</p>
+                            <h6><%= new Date(question.createdAt).toLocaleDateString() %></h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <p class="text-muted mb-1">Last Modified</p>
+                            <h6><%= new Date(question.updatedAt).toLocaleDateString() %></h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <p class="text-muted mb-1">Chapter Progress</p>
+                            <h6>- / 12 questions</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

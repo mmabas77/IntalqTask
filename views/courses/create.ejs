@@ -1,0 +1,96 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-plus me-2"></i>Create New Course
+                </h3>
+            </div>
+            <div class="card-body">
+                <form action="/courses" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Course Name *</label>
+                        <input type="text" 
+                               class="form-control <%= errors.name ? 'is-invalid' : '' %>" 
+                               id="name" 
+                               name="name" 
+                               value="<%= typeof oldInput !== 'undefined' ? oldInput.name : '' %>"
+                               placeholder="Enter course name"
+                               required>
+                        <% if (errors.name) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.name.msg %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="numberOfChapters" class="form-label">Number of Chapters *</label>
+                        <input type="number" 
+                               class="form-control <%= errors.numberOfChapters ? 'is-invalid' : '' %>" 
+                               id="numberOfChapters" 
+                               name="numberOfChapters" 
+                               value="<%= typeof oldInput !== 'undefined' ? oldInput.numberOfChapters : '' %>"
+                               min="1" 
+                               max="50"
+                               placeholder="Enter number of chapters"
+                               required>
+                        <% if (errors.numberOfChapters) { %>
+                            <div class="invalid-feedback">
+                                <%= errors.numberOfChapters.msg %>
+                            </div>
+                        <% } %>
+                        <div class="form-text">
+                            Each chapter will contain up to 12 questions (4 of each objective type)
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> After creating the course, you'll be able to add questions to each chapter. 
+                        Each chapter must have exactly 12 questions with equal distribution across objective types 
+                        (4 reminding, 4 understanding, 4 creativity).
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/courses" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Create Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Help & Guidelines
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-book me-2 text-primary"></i>Course Structure</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Each course can have 1-50 chapters</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Chapters are automatically created</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Each chapter needs exactly 12 questions</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-balance-scale me-2 text-info"></i>Question Distribution</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>4 Reminding questions per chapter</li>
+                            <li><i class="fas fa-check text-success me-2"></i>4 Understanding questions per chapter</li>
+                            <li><i class="fas fa-check text-success me-2"></i>4 Creativity questions per chapter</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
