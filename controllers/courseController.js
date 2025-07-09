@@ -1,6 +1,30 @@
 const { Course, Chapter, Question } = require('../models');
 const { validationResult } = require('express-validator');
 
+// Helper function to calculate course statistics
+async function calculateCourseStatistics(courseId) {
+    const chapters = await Chapter.find({ courseId: courseId });
+    let totalQuestions = 0;
+    let completedChapters = 0;
+    
+    for (const chapter of chapters) {
+        const questions = await Question.find({ chapterId: chapter._id });
+        totalQuestions += questions.length;
+        
+        if (questions.length === 12) {
+            completedChapters++;
+        }
+    }
+    
+    const incompleteChapters = chapters.length - completedChapters;
+    
+    return {
+        totalQuestions,
+        completedChapters,
+        incompleteChapters
+    };
+}
+
 class CourseController {
     // Display all courses
     async index(req, res) {
@@ -154,9 +178,12 @@ class CourseController {
                 return res.redirect('/courses');
             }
 
+            const statistics = await calculateCourseStatistics(course._id);
+
             res.render('courses/edit', {
                 title: 'Edit Course',
                 course: course,
+                statistics: statistics,
                 errors: {}
             });
         } catch (error) {
@@ -165,15 +192,18 @@ class CourseController {
         }
     }
 
+
     // Update course
     async update(req, res) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 const course = await Course.findById(req.params.id);
+                const statistics = await calculateCourseStatistics(course._id);
                 return res.render('courses/edit', {
                     title: 'Edit Course',
                     course: course,
+                    statistics: statistics,
                     errors: errors.mapped(),
                     oldInput: req.body
                 });
@@ -194,9 +224,11 @@ class CourseController {
             });
             
             if (existingCourse) {
+                const statistics = await calculateCourseStatistics(course._id);
                 return res.render('courses/edit', {
                     title: 'Edit Course',
                     course: course,
+                    statistics: statistics,
                     errors: { name: { msg: 'Course with this name already exists' } },
                     oldInput: req.body
                 });
