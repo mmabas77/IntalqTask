@@ -42,6 +42,7 @@ class QuestionController {
     async create(req, res) {
         try {
             const { chapterId } = req.params;
+            const { objective } = req.query;
             const chapter = await Chapter.findById(chapterId).populate('courseId');
             
             if (!chapter) {
@@ -59,6 +60,7 @@ class QuestionController {
             res.render('questions/create', {
                 title: 'Add New Question',
                 chapter: chapter,
+                objective: objective,
                 errors: {}
             });
         } catch (error) {

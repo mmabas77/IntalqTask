@@ -109,7 +109,7 @@
                         <div class="text-center py-3">
                             <i class="fas fa-question-circle fa-2x text-muted mb-2"></i>
                             <p class="text-muted">No <%= objective %> questions yet</p>
-                            <a href="/questions/create/<%= chapter.courseId._id %>/<%= chapter.number %>?objective=<%= objective %>" class="btn btn-outline-primary">
+                            <a href="/questions/chapter/<%= chapter._id %>/create?objective=<%= objective %>" class="btn btn-outline-primary">
                                 <i class="fas fa-plus me-2"></i>Add <%= objective.charAt(0).toUpperCase() + objective.slice(1) %> Question
                             </a>
                         </div>
@@ -128,17 +128,17 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <a href="/questions/create/<%= chapter.courseId._id %>/<%= chapter.number %>?objective=reminding" class="btn btn-info w-100 mb-2">
+                        <a href="/questions/chapter/<%= chapter._id %>/create?objective=reminding" class="btn btn-info w-100 mb-2">
                             <i class="fas fa-brain me-2"></i>Add Reminding Question
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a href="/questions/create/<%= chapter.courseId._id %>/<%= chapter.number %>?objective=understanding" class="btn btn-success w-100 mb-2">
+                        <a href="/questions/chapter/<%= chapter._id %>/create?objective=understanding" class="btn btn-success w-100 mb-2">
                             <i class="fas fa-lightbulb me-2"></i>Add Understanding Question
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a href="/questions/create/<%= chapter.courseId._id %>/<%= chapter.number %>?objective=creativity" class="btn btn-warning w-100 mb-2">
+                        <a href="/questions/chapter/<%= chapter._id %>/create?objective=creativity" class="btn btn-warning w-100 mb-2">
                             <i class="fas fa-magic me-2"></i>Add Creativity Question
                         </a>
                     </div>
