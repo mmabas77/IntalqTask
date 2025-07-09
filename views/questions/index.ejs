@@ -3,10 +3,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3">
                 <i class="fas fa-question-circle me-2"></i>
-                Questions for <%= chapter.courseId.name %> - Chapter <%= chapter.number %>
+                Questions for <%= chapter.courseId.name %> - Chapter <%= chapter.chapterNumber %>
             </h1>
             <div class="btn-group">
-                <a href="/questions/create/<%= chapter.courseId._id %>/<%= chapter.number %>" class="btn btn-primary">
+                <a href="/questions/chapter/<%= chapter._id %>/create" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Add Question
                 </a>
                 <a href="/courses/<%= chapter.courseId._id %>" class="btn btn-secondary">
@@ -65,7 +65,7 @@
                             <i class="fas fa-magic me-2 text-warning"></i>Creativity Questions
                         <% } %>
                         <span class="badge bg-<%= objective === 'reminding' ? 'info' : objective === 'understanding' ? 'success' : 'warning' %> ms-2">
-                            <%= chapter.questions.filter(q => q.objective === objective).length %> / 4
+                            <%= questions.filter(q => q.objective === objective).length %> / 4
                         </span>
                     </h5>
                 </div>

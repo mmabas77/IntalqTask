@@ -5,7 +5,7 @@ const questionController = require('../controllers/questionController');
 
 // Validation rules
 const questionValidation = [
-    body('questionText')
+    body('text')
         .notEmpty()
         .withMessage('Question text is required')
         .isLength({ min: 10, max: 1000 })

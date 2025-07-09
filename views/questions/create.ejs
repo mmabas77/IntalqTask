@@ -48,9 +48,8 @@
                                         name="difficulty" 
                                         required>
                                     <option value="">Select difficulty</option>
-                                    <option value="easy" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'easy' ? 'selected' : '' %>>Easy</option>
-                                    <option value="medium" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'medium' ? 'selected' : '' %>>Medium</option>
-                                    <option value="hard" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'hard' ? 'selected' : '' %>>Hard</option>
+                                    <option value="simple" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'simple' ? 'selected' : '' %>>Simple</option>
+                                    <option value="difficult" <%= typeof oldInput !== 'undefined' && oldInput.difficulty === 'difficult' ? 'selected' : '' %>>Difficult</option>
                                 </select>
                                 <% if (errors && errors.difficulty) { %>
                                     <div class="invalid-feedback">
@@ -79,30 +78,30 @@
                     <div class="mb-3">
                         <label class="form-label">Answer Options *</label>
                         <div id="options-container">
-                            <% for (let i = 0; i < 4; i++) { %>
+                            <% for (let i = 0; i < 3; i++) { %>
                                 <div class="option-item mb-2">
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <%= String.fromCharCode(65 + i) %>.
                                         </span>
                                         <input type="text" 
-                                               class="form-control <%= errors && errors['options.' + i + '.text'] ? 'is-invalid' : '' %>" 
-                                               name="options[<%= i %>][text]" 
+                                               class="form-control <%= errors && errors['choice' + (i + 1)] ? 'is-invalid' : '' %>" 
+                                               name="choice<%= i + 1 %>" 
                                                placeholder="Option <%= String.fromCharCode(65 + i) %>"
-                                               value="<%= typeof oldInput !== 'undefined' && oldInput.options && oldInput.options[i] ? oldInput.options[i].text : '' %>"
+                                               value="<%= typeof oldInput !== 'undefined' && oldInput['choice' + (i + 1)] ? oldInput['choice' + (i + 1)] : '' %>"
                                                required>
                                         <div class="input-group-text">
                                             <input type="radio" 
-                                                   name="correctOption" 
+                                                   name="correctAnswer" 
                                                    value="<%= i %>"
-                                                   <%= typeof oldInput !== 'undefined' && oldInput.correctOption == i ? 'checked' : '' %>
+                                                   <%= typeof oldInput !== 'undefined' && oldInput.correctAnswer == i ? 'checked' : '' %>
                                                    required>
                                             <label class="form-check-label ms-1">Correct</label>
                                         </div>
                                     </div>
-                                    <% if (errors && errors['options.' + i + '.text']) { %>
+                                    <% if (errors && errors['choice' + (i + 1)]) { %>
                                         <div class="invalid-feedback d-block">
-                                            <%= errors['options.' + i + '.text'].msg %>
+                                            <%= errors['choice' + (i + 1)].msg %>
                                         </div>
                                     <% } %>
                                 </div>

@@ -100,7 +100,7 @@ class QuestionController {
                 });
             }
 
-            const { questionText, choice1, choice2, choice3, correctAnswer, difficulty, objective } = req.body;
+            const { text, choice1, choice2, choice3, correctAnswer, difficulty, objective } = req.body;
 
             // Validate that choices are not empty and different
             const choices = [choice1.trim(), choice2.trim(), choice3.trim()];
@@ -141,7 +141,7 @@ class QuestionController {
 
             const question = new Question({
                 chapterId: chapterId,
-                questionText: questionText.trim(),
+                questionText: text.trim(),
                 choices: choices,
                 correctAnswer: parseInt(correctAnswer),
                 difficulty: difficulty,
@@ -236,7 +236,7 @@ class QuestionController {
                 });
             }
 
-            const { questionText, choice1, choice2, choice3, correctAnswer, difficulty, objective } = req.body;
+            const { text, choice1, choice2, choice3, correctAnswer, difficulty, objective } = req.body;
 
             // Validate choices
             const choices = [choice1.trim(), choice2.trim(), choice3.trim()];
@@ -280,7 +280,7 @@ class QuestionController {
                 }
             }
 
-            question.questionText = questionText.trim();
+            question.questionText = text.trim();
             question.choices = choices;
             question.correctAnswer = parseInt(correctAnswer);
             question.difficulty = difficulty;

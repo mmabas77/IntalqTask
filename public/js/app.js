@@ -287,9 +287,9 @@ function hideSpinner() {
 // Question form validation
 function validateQuestionForm() {
     const choices = [
-        $('#choice1').val().trim(),
-        $('#choice2').val().trim(),
-        $('#choice3').val().trim()
+        $('input[name="choice1"]').val().trim(),
+        $('input[name="choice2"]').val().trim(),
+        $('input[name="choice3"]').val().trim()
     ];
     
     // Check for empty choices

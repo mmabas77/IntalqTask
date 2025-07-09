@@ -78,30 +78,30 @@
                     <div class="mb-3">
                         <label class="form-label">Answer Options *</label>
                         <div id="options-container">
-                            <% for (let i = 0; i < 4; i++) { %>
+                            <% for (let i = 0; i < 3; i++) { %>
                                 <div class="option-item mb-2">
                                     <div class="input-group">
                                         <span class="input-group-text">
                                             <%= String.fromCharCode(65 + i) %>.
                                         </span>
                                         <input type="text" 
-                                               class="form-control <%= errors && errors['options.' + i + '.text'] ? 'is-invalid' : '' %>" 
-                                               name="options[<%= i %>][text]" 
+                                               class="form-control <%= errors && errors['choice' + (i + 1)] ? 'is-invalid' : '' %>" 
+                                               name="choice<%= i + 1 %>" 
                                                placeholder="Option <%= String.fromCharCode(65 + i) %>"
                                                value="<%= question.choices[i] ? question.choices[i] : '' %>"
                                                required>
                                         <div class="input-group-text">
                                             <input type="radio" 
-                                                   name="correctOption" 
+                                                   name="correctAnswer" 
                                                    value="<%= i %>"
                                                    <%= question.correctAnswer == i ? 'checked' : '' %>
                                                    required>
                                             <label class="form-check-label ms-1">Correct</label>
                                         </div>
                                     </div>
-                                    <% if (errors && errors['options.' + i + '.text']) { %>
+                                    <% if (errors && errors['choice' + (i + 1)]) { %>
                                         <div class="invalid-feedback d-block">
-                                            <%= errors['options.' + i + '.text'].msg %>
+                                            <%= errors['choice' + (i + 1)].msg %>
                                         </div>
                                     <% } %>
                                 </div>
