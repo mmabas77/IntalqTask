@@ -7,10 +7,7 @@ $(document).ready(function() {
     // Initialize popovers
     $('[data-bs-toggle="popover"]').popover();
     
-    // Auto-hide alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
+    // Don't auto-hide alerts - let users dismiss them manually
     
     // Confirm delete actions
     $('.delete-btn').click(function(e) {
@@ -26,15 +23,27 @@ $(document).ready(function() {
     // Course selection in exam creation
     $('#courseSelect').change(function() {
         const courseId = $(this).val();
+        console.log('Course selected:', courseId);
         if (courseId) {
+            // Show course info immediately and keep it visible
+            $('#courseInfo').show();
             loadCourseInfo(courseId);
+            // Reset button state while loading
+            $('#generateBtn').prop('disabled', true);
+            // Update total questions
+            if (typeof window.updateTotalQuestions === 'function') {
+                window.updateTotalQuestions();
+            }
         } else {
+            // Only hide course info if explicitly selecting empty option
             $('#courseInfo').hide();
+            $('#generateBtn').prop('disabled', true);
+            $('#totalQuestions').text('0');
         }
     });
     
     // Real-time exam requirement validation
-    $('.exam-requirement').on('input', function() {
+    $('.exam-requirement, #title').on('input', function() {
         validateExamRequirements();
     });
     
@@ -51,15 +60,27 @@ $(document).ready(function() {
 
 // Load course information for exam creation
 function loadCourseInfo(courseId) {
+    console.log('Loading course info for:', courseId);
     $.ajax({
         url: `/exams/course/${courseId}/info`,
         method: 'GET',
         success: function(data) {
+            console.log('Course info loaded:', data);
             displayCourseInfo(data);
             updateExamConstraints(data);
+            // Update total questions after course info is loaded
+            if (typeof window.updateTotalQuestions === 'function') {
+                window.updateTotalQuestions();
+            }
+            // Trigger validation after course info is loaded
+            setTimeout(function() {
+                validateExamRequirements();
+            }, 100);
         },
-        error: function() {
+        error: function(xhr, status, error) {
+            console.error('Error loading course info:', error);
             showAlert('Error loading course information', 'danger');
+            // Don't hide course info on error - keep previous data visible
         }
     });
 }
@@ -110,7 +131,13 @@ function updateExamConstraints(data) {
 // Validate exam requirements in real-time
 function validateExamRequirements() {
     const courseId = $('#courseSelect').val();
-    if (!courseId) return;
+    console.log('Validating exam requirements, courseId:', courseId);
+    if (!courseId) {
+        $('#generateBtn').prop('disabled', true);
+        console.log('No course selected, disabling generate button');
+        // Don't hide course info - keep it visible if it exists
+        return;
+    }
     
     const requirements = {
         courseId: courseId,
@@ -122,28 +149,42 @@ function validateExamRequirements() {
         creativityQuestions: parseInt($('#creativityQuestions').val()) || 0
     };
     
+    // Check if all fields are filled including title
+    const examTitle = $('#title').val().trim();
+    const allFieldsFilled = Object.values(requirements).every(v => v > 0) && examTitle.length > 0;
+    if (!allFieldsFilled) {
+        $('#generateBtn').prop('disabled', true);
+        return;
+    }
+    
     // Client-side validation
-    const totalQuestions = requirements.questionsPerChapter * $('#courseSelect option:selected').data('chapters') || 0;
+    const totalQuestions = requirements.questionsPerChapter * (parseInt($('#courseSelect option:selected').attr('data-chapters')) || 0);
     const totalByDifficulty = requirements.simpleQuestions + requirements.difficultQuestions;
     const totalByObjective = requirements.remindingQuestions + requirements.understandingQuestions + requirements.creativityQuestions;
     
     let isValid = true;
     let errors = [];
     
-    if (totalByDifficulty !== totalQuestions) {
+    if (totalQuestions === 0) {
+        errors.push('Please select a course first');
+        isValid = false;
+        console.log('Total questions is 0, adding error. chapters attr:', $('#courseSelect option:selected').attr('data-chapters'));
+    }
+    
+    if (totalByDifficulty !== totalQuestions && totalQuestions > 0) {
         errors.push(`Total difficulty questions (${totalByDifficulty}) must equal total questions (${totalQuestions})`);
         isValid = false;
     }
     
-    if (totalByObjective !== totalQuestions) {
+    if (totalByObjective !== totalQuestions && totalQuestions > 0) {
         errors.push(`Total objective questions (${totalByObjective}) must equal total questions (${totalQuestions})`);
         isValid = false;
     }
     
     updateValidationDisplay(isValid, errors);
     
-    // Server-side validation
-    if (Object.values(requirements).every(v => v > 0)) {
+    // Server-side validation only if client-side validation passes
+    if (isValid && allFieldsFilled) {
         $.ajax({
             url: '/exams/validate',
             method: 'POST',
@@ -151,8 +192,13 @@ function validateExamRequirements() {
             success: function(data) {
                 updateValidationDisplay(data.valid, data.errors);
                 $('#generateBtn').prop('disabled', !data.valid);
+            },
+            error: function() {
+                $('#generateBtn').prop('disabled', true);
             }
         });
+    } else {
+        $('#generateBtn').prop('disabled', true);
     }
 }
 
@@ -263,10 +309,7 @@ function showAlert(message, type = 'info') {
     
     $('main .container').prepend(alertHtml);
     
-    // Auto-hide after 5 seconds
-    setTimeout(function() {
-        $('.alert').fadeOut('slow');
-    }, 5000);
+    // Don't auto-hide alerts - let users dismiss them manually
 }
 
 function showSpinner() {

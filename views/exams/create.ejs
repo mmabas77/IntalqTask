@@ -261,23 +261,4 @@
     </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    // Calculate total questions when inputs change
-    function updateTotalQuestions() {
-        const questionsPerChapter = parseInt($('#questionsPerChapter').val()) || 0;
-        const selectedCourse = $('#courseSelect option:selected');
-        const chapters = parseInt(selectedCourse.data('chapters')) || 0;
-        const total = questionsPerChapter * chapters;
-        $('#totalQuestions').text(total);
-    }
-
-    $('#questionsPerChapter, #courseSelect').on('change input', updateTotalQuestions);
-    
-    // Load course info if already selected
-    if ($('#courseSelect').val()) {
-        loadCourseInfo($('#courseSelect').val());
-        updateTotalQuestions();
-    }
-});
-</script>
+<script src="/js/exam-create.js"></script>

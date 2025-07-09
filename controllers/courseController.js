@@ -40,10 +40,19 @@ class CourseController {
                     let completedChapters = 0;
                     
                     for (const chapter of chapters) {
-                        const questions = await Question.find({ chapterId: chapter._id });
-                        totalQuestions += questions.length;
+                        // Use cached questionCount first, fallback to direct query if needed
+                        let questionCount = chapter.questionCount;
+                        if (questionCount === 0 || questionCount === null || questionCount === undefined) {
+                            const questions = await Question.find({ chapterId: chapter._id });
+                            questionCount = questions.length;
+                            // Update the cached count if it was wrong
+                            if (questionCount > 0) {
+                                await Chapter.findByIdAndUpdate(chapter._id, { questionCount });
+                            }
+                        }
+                        totalQuestions += questionCount;
                         
-                        if (questions.length === 12) {
+                        if (questionCount === 12) {
                             completedChapters++;
                         }
                     }
@@ -326,13 +335,24 @@ class CourseController {
             };
 
             for (const chapter of chapters) {
-                const questions = await Question.find({ chapterId: chapter._id });
-                statistics.totalQuestions += questions.length;
+                // Use cached questionCount first, fallback to direct query if needed
+                let questionCount = chapter.questionCount;
+                if (questionCount === 0 || questionCount === null || questionCount === undefined) {
+                    const questions = await Question.find({ chapterId: chapter._id });
+                    questionCount = questions.length;
+                    // Update the cached count if it was wrong
+                    if (questionCount > 0) {
+                        await Chapter.findByIdAndUpdate(chapter._id, { questionCount });
+                    }
+                }
+                statistics.totalQuestions += questionCount;
                 
-                if (questions.length === 12) {
+                if (questionCount === 12) {
                     statistics.completedChapters++;
                 }
 
+                // Still need to query questions for detailed statistics
+                const questions = await Question.find({ chapterId: chapter._id });
                 questions.forEach(q => {
                     statistics.difficultyDistribution[q.difficulty]++;
                     statistics.objectiveDistribution[q.objective]++;

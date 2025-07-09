@@ -194,15 +194,53 @@ courseSchema.post('save', async function(course) {
 
 // Update question count when question is added/removed
 questionSchema.post('save', async function(question) {
-    const Chapter = mongoose.model('Chapter');
-    const count = await mongoose.model('Question').countDocuments({ chapterId: question.chapterId });
-    await Chapter.findByIdAndUpdate(question.chapterId, { questionCount: count });
+    try {
+        const Chapter = mongoose.model('Chapter');
+        const count = await mongoose.model('Question').countDocuments({ chapterId: question.chapterId });
+        await Chapter.findByIdAndUpdate(question.chapterId, { questionCount: count });
+        console.log(`Updated chapter ${question.chapterId} question count to ${count}`);
+    } catch (error) {
+        console.error('Error updating question count on save:', error);
+    }
 });
 
 questionSchema.post('remove', async function(question) {
-    const Chapter = mongoose.model('Chapter');
-    const count = await mongoose.model('Question').countDocuments({ chapterId: question.chapterId });
-    await Chapter.findByIdAndUpdate(question.chapterId, { questionCount: count });
+    try {
+        const Chapter = mongoose.model('Chapter');
+        const count = await mongoose.model('Question').countDocuments({ chapterId: question.chapterId });
+        await Chapter.findByIdAndUpdate(question.chapterId, { questionCount: count });
+        console.log(`Updated chapter ${question.chapterId} question count to ${count}`);
+    } catch (error) {
+        console.error('Error updating question count on remove:', error);
+    }
+});
+
+// Also handle deleteOne and findOneAndDelete
+questionSchema.post('deleteOne', async function() {
+    try {
+        const question = this.getQuery();
+        if (question.chapterId) {
+            const Chapter = mongoose.model('Chapter');
+            const count = await mongoose.model('Question').countDocuments({ chapterId: question.chapterId });
+            await Chapter.findByIdAndUpdate(question.chapterId, { questionCount: count });
+            console.log(`Updated chapter ${question.chapterId} question count to ${count}`);
+        }
+    } catch (error) {
+        console.error('Error updating question count on deleteOne:', error);
+    }
+});
+
+questionSchema.post('findOneAndDelete', async function(question) {
+    try {
+        if (question && question.chapterId) {
+            const Chapter = mongoose.model('Chapter');
+            const count = await mongoose.model('Question').countDocuments({ chapterId: question.chapterId });
+            await Chapter.findByIdAndUpdate(question.chapterId, { questionCount: count });
+            console.log(`Updated chapter ${question.chapterId} question count to ${count}`);
+        }
+    } catch (error) {
+        console.error('Error updating question count on findOneAndDelete:', error);
+    }
 });
 
 // Create models
