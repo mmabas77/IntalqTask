@@ -146,25 +146,25 @@
                 <div class="row text-center">
                     <div class="col-md-3">
                         <div class="border rounded p-3">
-                            <h4 class="text-primary mb-0"><%= chapter.questionCount || 0 %></h4>
+                            <h4 class="text-primary mb-0"><%= questionCounts.total %></h4>
                             <small class="text-muted">Total Questions</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="border rounded p-3">
-                            <h4 class="text-info mb-0">-</h4>
+                            <h4 class="text-info mb-0"><%= questionCounts.reminding %></h4>
                             <small class="text-muted">Reminding (4 needed)</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="border rounded p-3">
-                            <h4 class="text-success mb-0">-</h4>
+                            <h4 class="text-success mb-0"><%= questionCounts.understanding %></h4>
                             <small class="text-muted">Understanding (4 needed)</small>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="border rounded p-3">
-                            <h4 class="text-warning mb-0">-</h4>
+                            <h4 class="text-warning mb-0"><%= questionCounts.creativity %></h4>
                             <small class="text-muted">Creativity (4 needed)</small>
                         </div>
                     </div>

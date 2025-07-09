@@ -57,10 +57,20 @@ class QuestionController {
                 return res.redirect(`/questions/chapter/${chapterId}`);
             }
 
+            // Get current question counts by objective
+            const questions = await Question.find({ chapterId: chapterId });
+            const questionCounts = {
+                total: questions.length,
+                reminding: questions.filter(q => q.objective === 'reminding').length,
+                understanding: questions.filter(q => q.objective === 'understanding').length,
+                creativity: questions.filter(q => q.objective === 'creativity').length
+            };
+
             res.render('questions/create', {
                 title: 'Add New Question',
                 chapter: chapter,
                 objective: objective,
+                questionCounts: questionCounts,
                 errors: {}
             });
         } catch (error) {
@@ -83,9 +93,19 @@ class QuestionController {
 
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/create', {
                     title: 'Add New Question',
                     chapter: chapter,
+                    questionCounts: questionCounts,
                     errors: errors.mapped(),
                     oldInput: req.body
                 });
@@ -94,9 +114,19 @@ class QuestionController {
             // Check if chapter already has 12 questions
             const questionCount = await Question.countDocuments({ chapterId: chapterId });
             if (questionCount >= 12) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/create', {
                     title: 'Add New Question',
                     chapter: chapter,
+                    questionCounts: questionCounts,
                     errors: { general: { msg: 'Chapter already has the maximum number of questions (12)' } },
                     oldInput: req.body
                 });
@@ -107,9 +137,19 @@ class QuestionController {
             // Validate that choices are not empty and different
             const choices = [choice1.trim(), choice2.trim(), choice3.trim()];
             if (choices.some(choice => choice === '')) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/create', {
                     title: 'Add New Question',
                     chapter: chapter,
+                    questionCounts: questionCounts,
                     errors: { choices: { msg: 'All choices must be filled' } },
                     oldInput: req.body
                 });
@@ -118,9 +158,19 @@ class QuestionController {
             // Check for duplicate choices
             const uniqueChoices = [...new Set(choices)];
             if (uniqueChoices.length !== choices.length) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/create', {
                     title: 'Add New Question',
                     chapter: chapter,
+                    questionCounts: questionCounts,
                     errors: { choices: { msg: 'All choices must be different' } },
                     oldInput: req.body
                 });
@@ -137,9 +187,18 @@ class QuestionController {
                 currentObjectiveCounts[q.objective]++;
             });
             if (currentObjectiveCounts[objective] >= 4) {
+                // Get current question counts for error rendering
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/create', {
                     title: 'Add New Question',
                     chapter: chapter,
+                    questionCounts: questionCounts,
                     errors: { 
                         objective: { 
                             msg: `This chapter already has 4 ${objective} questions. Each chapter must have equal distribution (4 of each type).` 
@@ -213,9 +272,19 @@ class QuestionController {
                 return res.redirect('/courses');
             }
 
+            // Get current question counts by objective
+            const questions = await Question.find({ chapterId: question.chapterId });
+            const questionCounts = {
+                total: questions.length,
+                reminding: questions.filter(q => q.objective === 'reminding').length,
+                understanding: questions.filter(q => q.objective === 'understanding').length,
+                creativity: questions.filter(q => q.objective === 'creativity').length
+            };
+
             res.render('questions/edit', {
                 title: 'Edit Question',
                 question: question,
+                questionCounts: questionCounts,
                 errors: {}
             });
         } catch (error) {
@@ -242,9 +311,19 @@ class QuestionController {
 
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: question.chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/edit', {
                     title: 'Edit Question',
                     question: question,
+                    questionCounts: questionCounts,
                     errors: errors.mapped(),
                     oldInput: req.body
                 });
@@ -255,9 +334,19 @@ class QuestionController {
             // Validate choices
             const choices = [choice1.trim(), choice2.trim(), choice3.trim()];
             if (choices.some(choice => choice === '')) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: question.chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/edit', {
                     title: 'Edit Question',
                     question: question,
+                    questionCounts: questionCounts,
                     errors: { choices: { msg: 'All choices must be filled' } },
                     oldInput: req.body
                 });
@@ -266,9 +355,19 @@ class QuestionController {
             // Check for duplicate choices
             const uniqueChoices = [...new Set(choices)];
             if (uniqueChoices.length !== choices.length) {
+                // Get current question counts for error rendering
+                const questions = await Question.find({ chapterId: question.chapterId });
+                const questionCounts = {
+                    total: questions.length,
+                    reminding: questions.filter(q => q.objective === 'reminding').length,
+                    understanding: questions.filter(q => q.objective === 'understanding').length,
+                    creativity: questions.filter(q => q.objective === 'creativity').length
+                };
+                
                 return res.render('questions/edit', {
                     title: 'Edit Question',
                     question: question,
+                    questionCounts: questionCounts,
                     errors: { choices: { msg: 'All choices must be different' } },
                     oldInput: req.body
                 });
@@ -281,9 +380,19 @@ class QuestionController {
                 currentObjectiveCounts[question.objective]--;
                 // Check if new objective would exceed limit
                 if (currentObjectiveCounts[objective] >= 4) {
+                    // Get current question counts for error rendering
+                    const questions = await Question.find({ chapterId: question.chapterId });
+                    const questionCounts = {
+                        total: questions.length,
+                        reminding: questions.filter(q => q.objective === 'reminding').length,
+                        understanding: questions.filter(q => q.objective === 'understanding').length,
+                        creativity: questions.filter(q => q.objective === 'creativity').length
+                    };
+                    
                     return res.render('questions/edit', {
                         title: 'Edit Question',
                         question: question,
+                        questionCounts: questionCounts,
                         errors: { 
                             objective: { 
                                 msg: `This chapter already has 4 ${objective} questions. Each chapter must have equal distribution (4 of each type).` 

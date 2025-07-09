@@ -25,17 +25,15 @@
                                 </p>
                                 <p class="card-text text-muted">
                                     <i class="fas fa-question-circle me-2"></i>
-                                    <%= course.chapters ? course.chapters.reduce((total, chapter) => total + (chapter.questions ? chapter.questions.length : 0), 0) : 0 %> questions
+                                    <%= course.totalQuestions || 0 %> questions
                                 </p>
                                 <div class="progress mb-3">
-                                    <% const completedChapters = course.chapters ? course.chapters.filter(chapter => chapter.questions && chapter.questions.length === 12).length : 0 %>
-                                    <% const progressPercentage = (completedChapters / course.numberOfChapters) * 100 %>
-                                    <div class="progress-bar" role="progressbar" style="width: <%= progressPercentage %>%">
-                                        <%= Math.round(progressPercentage) %>%
+                                    <div class="progress-bar" role="progressbar" style="width: <%= course.progressPercentage || 0 %>%">
+                                        <%= course.progressPercentage || 0 %>%
                                     </div>
                                 </div>
                                 <small class="text-muted">
-                                    <%= completedChapters %> of <%= course.numberOfChapters %> chapters completed
+                                    <%= course.completedChapters || 0 %> of <%= course.numberOfChapters %> chapters completed
                                 </small>
                             </div>
                             <div class="card-footer bg-transparent">

@@ -6,9 +6,40 @@ class CourseController {
     async index(req, res) {
         try {
             const courses = await Course.find().sort({ createdAt: -1 });
+            
+            // Calculate progress for each course
+            const coursesWithProgress = await Promise.all(
+                courses.map(async (course) => {
+                    const chapters = await Chapter.find({ courseId: course._id });
+                    
+                    let totalQuestions = 0;
+                    let completedChapters = 0;
+                    
+                    for (const chapter of chapters) {
+                        const questions = await Question.find({ chapterId: chapter._id });
+                        totalQuestions += questions.length;
+                        
+                        if (questions.length === 12) {
+                            completedChapters++;
+                        }
+                    }
+                    
+                    const progressPercentage = course.numberOfChapters > 0 
+                        ? (completedChapters / course.numberOfChapters) * 100 
+                        : 0;
+                    
+                    return {
+                        ...course.toObject(),
+                        totalQuestions,
+                        completedChapters,
+                        progressPercentage: Math.round(progressPercentage)
+                    };
+                })
+            );
+            
             res.render('courses/index', { 
                 title: 'Courses',
-                courses: courses
+                courses: coursesWithProgress
             });
         } catch (error) {
             req.flash('error', 'Error loading courses');
