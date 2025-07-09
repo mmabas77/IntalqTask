@@ -300,7 +300,7 @@ class QuestionController {
 
             await question.save();
             req.flash('success', 'Question updated successfully!');
-            res.redirect(`/questions/chapter/${question.chapterId}`);
+            res.redirect(`/questions/${question._id}`);
         } catch (error) {
             console.error('Error updating question:', error);
             req.flash('error', 'Error updating question');
