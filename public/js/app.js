@@ -282,6 +282,9 @@ function initializeExamForm() {
     form.submit(function(e) {
         e.preventDefault();
         
+        // Clear previous error messages
+        $('#errorContainer').hide().html('');
+        
         // Show loading spinner
         showSpinner();
         
@@ -309,15 +312,97 @@ function initializeExamForm() {
                         window.location.href = redirectUrl;
                     }
                 } else {
-                    showAlert(data.message || 'Error generating exam', 'danger');
+                    // Show detailed error message for genetic algorithm failures
+                    showDetailedError(data);
                 }
             },
             error: function(xhr) {
                 hideSpinner();
-                showAlert('Error generating exam. Please try again.', 'danger');
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    showDetailedError(xhr.responseJSON);
+                } else {
+                    showAlert('Error generating exam. Please try again.', 'danger');
+                }
             }
         });
     });
+}
+
+// Show detailed error messages for genetic algorithm failures
+function showDetailedError(errorData) {
+    let html = '<div class="alert alert-danger">';
+    html += '<i class="fas fa-exclamation-triangle me-2"></i>';
+    html += '<strong>' + (errorData.message || 'Error generating exam') + '</strong>';
+    
+    // Show issues found
+    if (errorData.errors && errorData.errors.length > 0) {
+        html += '<div class="mt-3">';
+        html += '<h6><i class="fas fa-list me-2"></i>Issues Found:</h6>';
+        html += '<ul class="mb-0">';
+        errorData.errors.forEach(error => {
+            html += '<li>' + error + '</li>';
+        });
+        html += '</ul></div>';
+    }
+    
+    // Show suggestions
+    if (errorData.suggestions && errorData.suggestions.length > 0) {
+        html += '<div class="mt-3">';
+        html += '<h6><i class="fas fa-lightbulb me-2"></i>Suggestions:</h6>';
+        html += '<ul class="mb-0">';
+        errorData.suggestions.forEach(suggestion => {
+            html += '<li>' + suggestion + '</li>';
+        });
+        html += '</ul></div>';
+    }
+    
+    // Show available questions analysis
+    if (errorData.availableQuestions) {
+        const aq = errorData.availableQuestions;
+        html += '<div class="mt-3">';
+        html += '<h6><i class="fas fa-database me-2"></i>Available Questions Analysis:</h6>';
+        html += '<div class="row">';
+        html += '<div class="col-md-6">';
+        html += '<p><strong>Total Questions:</strong> ' + aq.total + '</p>';
+        html += '<p><strong>By Difficulty:</strong></p>';
+        html += '<ul class="mb-2">';
+        html += '<li>Simple: ' + (aq.byDifficulty.simple || 0) + '</li>';
+        html += '<li>Difficult: ' + (aq.byDifficulty.difficult || 0) + '</li>';
+        html += '</ul></div>';
+        html += '<div class="col-md-6">';
+        html += '<p><strong>By Objective:</strong></p>';
+        html += '<ul class="mb-2">';
+        html += '<li>Reminding: ' + (aq.byObjective.reminding || 0) + '</li>';
+        html += '<li>Understanding: ' + (aq.byObjective.understanding || 0) + '</li>';
+        html += '<li>Creativity: ' + (aq.byObjective.creativity || 0) + '</li>';
+        html += '</ul></div></div>';
+        
+        if (aq.byChapter) {
+            html += '<p><strong>By Chapter:</strong></p>';
+            html += '<ul class="mb-0">';
+            Object.entries(aq.byChapter).forEach(([chapterNum, counts]) => {
+                html += '<li>Chapter ' + chapterNum + ': ' + counts.total + ' questions ';
+                html += '(Simple: ' + counts.simple + ', Difficult: ' + counts.difficult + ')</li>';
+            });
+            html += '</ul>';
+        }
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    
+    // Find or create error container
+    let errorContainer = $('#errorContainer');
+    if (errorContainer.length === 0) {
+        // Create error container if it doesn't exist
+        errorContainer = $('<div id="errorContainer" class="mb-4"></div>');
+        $('#examForm').before(errorContainer);
+    }
+    
+    errorContainer.html(html).show();
+    
+    // Scroll to error message
+    errorContainer[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // Load chapter statistics

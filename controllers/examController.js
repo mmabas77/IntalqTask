@@ -256,26 +256,42 @@ class ExamController {
                 
                 suggestions.push(`Try this distribution: ${optimalSimple} simple, ${optimalDifficult} difficult questions.`);
                 
-                const courses = await Course.find().sort({ name: 1 });
-                return res.render('exams/create', {
-                    title: 'Create New Exam',
-                    courses: courses,
-                    selectedCourse: course,
-                    errors: { 
-                        algorithm: { 
-                            msg: 'Could not generate optimal exam with your requirements.',
-                            details: validation.errors,
-                            suggestions: suggestions,
-                            availableQuestions: {
-                                total: allQuestions.length,
-                                byDifficulty: questionsByDifficulty,
-                                byObjective: questionsByObjective,
-                                byChapter: questionsByChapter
-                            }
-                        } 
-                    },
-                    oldInput: req.body
-                });
+                // Check if it's an AJAX request
+                if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Could not generate optimal exam with your requirements.',
+                        errors: validation.errors,
+                        suggestions: suggestions,
+                        availableQuestions: {
+                            total: allQuestions.length,
+                            byDifficulty: questionsByDifficulty,
+                            byObjective: questionsByObjective,
+                            byChapter: questionsByChapter
+                        }
+                    });
+                } else {
+                    const courses = await Course.find().sort({ name: 1 });
+                    return res.render('exams/create', {
+                        title: 'Create New Exam',
+                        courses: courses,
+                        selectedCourse: course,
+                        errors: { 
+                            algorithm: { 
+                                msg: 'Could not generate optimal exam with your requirements.',
+                                details: validation.errors,
+                                suggestions: suggestions,
+                                availableQuestions: {
+                                    total: allQuestions.length,
+                                    byDifficulty: questionsByDifficulty,
+                                    byObjective: questionsByObjective,
+                                    byChapter: questionsByChapter
+                                }
+                            } 
+                        },
+                        oldInput: req.body
+                    });
+                }
             }
 
             // Save exam
