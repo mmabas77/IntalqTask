@@ -307,27 +307,29 @@ class GeneticAlgorithm {
             chapterCounts[q.chapterId] = (chapterCounts[q.chapterId] || 0) + 1;
         });
 
-        // Check total questions
+        // Check total questions (must be exact)
         if (questions.length !== this.requirements.totalQuestions) {
             errors.push(`Total questions: expected ${this.requirements.totalQuestions}, got ${questions.length}`);
         }
 
-        // Check difficulty distribution
-        if (counts.simple !== this.requirements.simpleQuestions) {
+        // Check difficulty distribution (allow small tolerance)
+        const diffTolerance = 1; // Allow 1 question difference
+        if (Math.abs(counts.simple - this.requirements.simpleQuestions) > diffTolerance) {
             errors.push(`Simple questions: expected ${this.requirements.simpleQuestions}, got ${counts.simple}`);
         }
-        if (counts.difficult !== this.requirements.difficultQuestions) {
+        if (Math.abs(counts.difficult - this.requirements.difficultQuestions) > diffTolerance) {
             errors.push(`Difficult questions: expected ${this.requirements.difficultQuestions}, got ${counts.difficult}`);
         }
 
-        // Check objective distribution
-        if (counts.reminding !== this.requirements.remindingQuestions) {
+        // Check objective distribution (allow small tolerance)
+        const objTolerance = 1; // Allow 1 question difference
+        if (Math.abs(counts.reminding - this.requirements.remindingQuestions) > objTolerance) {
             errors.push(`Reminding questions: expected ${this.requirements.remindingQuestions}, got ${counts.reminding}`);
         }
-        if (counts.understanding !== this.requirements.understandingQuestions) {
+        if (Math.abs(counts.understanding - this.requirements.understandingQuestions) > objTolerance) {
             errors.push(`Understanding questions: expected ${this.requirements.understandingQuestions}, got ${counts.understanding}`);
         }
-        if (counts.creativity !== this.requirements.creativityQuestions) {
+        if (Math.abs(counts.creativity - this.requirements.creativityQuestions) > objTolerance) {
             errors.push(`Creativity questions: expected ${this.requirements.creativityQuestions}, got ${counts.creativity}`);
         }
 

@@ -140,6 +140,18 @@ class ExamController {
             }
 
             if (insufficientChapters.length > 0) {
+                const maxQuestionsPerChapter = Math.min(...insufficientChapters.map(ic => ic.available));
+                const totalAvailableQuestions = chapters.reduce((total, chapter) => {
+                    const chapterQuestions = allQuestions.filter(q => q.chapterId.toString() === chapter._id.toString());
+                    return total + chapterQuestions.length;
+                }, 0);
+                
+                const suggestions = [
+                    `Reduce "Questions per Chapter" to ${maxQuestionsPerChapter} or fewer.`,
+                    `Alternatively, consider reducing the total questions to ${totalAvailableQuestions} and distribute them differently.`,
+                    `You could also add more questions to the chapters with insufficient questions.`
+                ];
+                
                 const courses = await Course.find().sort({ name: 1 });
                 return res.render('exams/create', {
                     title: 'Create New Exam',
@@ -147,8 +159,11 @@ class ExamController {
                     selectedCourse: course,
                     errors: { 
                         insufficient: { 
-                            msg: 'Insufficient questions in some chapters',
-                            details: insufficientChapters
+                            msg: 'Some chapters don\'t have enough questions for your requirements.',
+                            details: insufficientChapters.map(ic => 
+                                `Chapter ${ic.chapter.chapterNumber}: has ${ic.available} questions, but you requested ${ic.required} per chapter`
+                            ),
+                            suggestions: suggestions
                         } 
                     },
                     oldInput: req.body
@@ -174,6 +189,73 @@ class ExamController {
             const validation = geneticAlgorithm.validateSolution(solution);
             
             if (!validation.valid) {
+                // Analyze available questions to provide better error messages
+                const questionsByDifficulty = allQuestions.reduce((acc, q) => {
+                    acc[q.difficulty] = (acc[q.difficulty] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                const questionsByObjective = allQuestions.reduce((acc, q) => {
+                    acc[q.objective] = (acc[q.objective] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                const questionsByChapter = {};
+                for (const chapter of chapters) {
+                    const chapterQuestions = allQuestions.filter(q => q.chapterId.toString() === chapter._id.toString());
+                    questionsByChapter[chapter.chapterNumber] = {
+                        total: chapterQuestions.length,
+                        simple: chapterQuestions.filter(q => q.difficulty === 'simple').length,
+                        difficult: chapterQuestions.filter(q => q.difficulty === 'difficult').length,
+                        reminding: chapterQuestions.filter(q => q.objective === 'reminding').length,
+                        understanding: chapterQuestions.filter(q => q.objective === 'understanding').length,
+                        creativity: chapterQuestions.filter(q => q.objective === 'creativity').length
+                    };
+                }
+                
+                // Generate helpful suggestions
+                const suggestions = [];
+                
+                // Check if we have enough questions of each type
+                if (questionsByDifficulty.simple < requirements.simpleQuestions) {
+                    suggestions.push(`Only ${questionsByDifficulty.simple} simple questions available, but you requested ${requirements.simpleQuestions}. Try requesting ${questionsByDifficulty.simple} or fewer simple questions.`);
+                }
+                
+                if (questionsByDifficulty.difficult < requirements.difficultQuestions) {
+                    suggestions.push(`Only ${questionsByDifficulty.difficult} difficult questions available, but you requested ${requirements.difficultQuestions}. Try requesting ${questionsByDifficulty.difficult} or fewer difficult questions.`);
+                }
+                
+                if (questionsByObjective.reminding < requirements.remindingQuestions) {
+                    suggestions.push(`Only ${questionsByObjective.reminding} reminding questions available, but you requested ${requirements.remindingQuestions}. Try requesting ${questionsByObjective.reminding} or fewer reminding questions.`);
+                }
+                
+                if (questionsByObjective.understanding < requirements.understandingQuestions) {
+                    suggestions.push(`Only ${questionsByObjective.understanding} understanding questions available, but you requested ${requirements.understandingQuestions}. Try requesting ${questionsByObjective.understanding} or fewer understanding questions.`);
+                }
+                
+                if (questionsByObjective.creativity < requirements.creativityQuestions) {
+                    suggestions.push(`Only ${questionsByObjective.creativity} creativity questions available, but you requested ${requirements.creativityQuestions}. Try requesting ${questionsByObjective.creativity} or fewer creativity questions.`);
+                }
+                
+                // Check chapter constraints
+                const problematicChapters = [];
+                Object.entries(questionsByChapter).forEach(([chapterNum, counts]) => {
+                    if (counts.total < requirements.questionsPerChapter) {
+                        problematicChapters.push(`Chapter ${chapterNum} has only ${counts.total} questions but you requested ${requirements.questionsPerChapter} per chapter`);
+                    }
+                });
+                
+                if (problematicChapters.length > 0) {
+                    suggestions.push(...problematicChapters);
+                    suggestions.push(`Consider reducing "Questions per Chapter" to ${Math.min(...Object.values(questionsByChapter).map(c => c.total))} or fewer.`);
+                }
+                
+                // Suggest optimal distribution
+                const optimalSimple = Math.min(questionsByDifficulty.simple || 0, Math.floor(totalQuestions * 0.6));
+                const optimalDifficult = Math.min(questionsByDifficulty.difficult || 0, totalQuestions - optimalSimple);
+                
+                suggestions.push(`Try this distribution: ${optimalSimple} simple, ${optimalDifficult} difficult questions.`);
+                
                 const courses = await Course.find().sort({ name: 1 });
                 return res.render('exams/create', {
                     title: 'Create New Exam',
@@ -181,8 +263,15 @@ class ExamController {
                     selectedCourse: course,
                     errors: { 
                         algorithm: { 
-                            msg: 'Could not generate optimal exam. Please adjust requirements.',
-                            details: validation.errors
+                            msg: 'Could not generate optimal exam with your requirements.',
+                            details: validation.errors,
+                            suggestions: suggestions,
+                            availableQuestions: {
+                                total: allQuestions.length,
+                                byDifficulty: questionsByDifficulty,
+                                byObjective: questionsByObjective,
+                                byChapter: questionsByChapter
+                            }
                         } 
                     },
                     oldInput: req.body

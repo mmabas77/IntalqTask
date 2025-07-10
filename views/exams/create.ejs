@@ -200,13 +200,28 @@
                     <% if (errors.insufficient) { %>
                         <div class="alert alert-danger">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            <%= errors.insufficient.msg %>
-                            <% if (errors.insufficient.details) { %>
-                                <ul class="mt-2">
-                                    <% errors.insufficient.details.forEach(detail => { %>
-                                        <li>Chapter <%= detail.chapter.chapterNumber %>: <%= detail.available %>/<%= detail.required %> questions available</li>
-                                    <% }); %>
-                                </ul>
+                            <strong><%= errors.insufficient.msg %></strong>
+                            
+                            <% if (errors.insufficient.details && errors.insufficient.details.length > 0) { %>
+                                <div class="mt-3">
+                                    <h6><i class="fas fa-list me-2"></i>Chapter Issues:</h6>
+                                    <ul class="mb-0">
+                                        <% errors.insufficient.details.forEach(detail => { %>
+                                            <li><%= detail %></li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
+                            <% } %>
+
+                            <% if (errors.insufficient.suggestions && errors.insufficient.suggestions.length > 0) { %>
+                                <div class="mt-3">
+                                    <h6><i class="fas fa-lightbulb me-2"></i>Suggestions:</h6>
+                                    <ul class="mb-0">
+                                        <% errors.insufficient.suggestions.forEach(suggestion => { %>
+                                            <li><%= suggestion %></li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
                             <% } %>
                         </div>
                     <% } %>
@@ -214,13 +229,62 @@
                     <% if (errors.algorithm) { %>
                         <div class="alert alert-danger">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            <%= errors.algorithm.msg %>
-                            <% if (errors.algorithm.details) { %>
-                                <ul class="mt-2">
-                                    <% errors.algorithm.details.forEach(detail => { %>
-                                        <li><%= detail %></li>
-                                    <% }); %>
-                                </ul>
+                            <strong><%= errors.algorithm.msg %></strong>
+                            
+                            <% if (errors.algorithm.details && errors.algorithm.details.length > 0) { %>
+                                <div class="mt-3">
+                                    <h6><i class="fas fa-list me-2"></i>Issues Found:</h6>
+                                    <ul class="mb-0">
+                                        <% errors.algorithm.details.forEach(detail => { %>
+                                            <li><%= detail %></li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
+                            <% } %>
+
+                            <% if (errors.algorithm.suggestions && errors.algorithm.suggestions.length > 0) { %>
+                                <div class="mt-3">
+                                    <h6><i class="fas fa-lightbulb me-2"></i>Suggestions:</h6>
+                                    <ul class="mb-0">
+                                        <% errors.algorithm.suggestions.forEach(suggestion => { %>
+                                            <li><%= suggestion %></li>
+                                        <% }); %>
+                                    </ul>
+                                </div>
+                            <% } %>
+
+                            <% if (errors.algorithm.availableQuestions) { %>
+                                <div class="mt-3">
+                                    <h6><i class="fas fa-database me-2"></i>Available Questions Analysis:</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Total Questions:</strong> <%= errors.algorithm.availableQuestions.total %></p>
+                                            <p><strong>By Difficulty:</strong></p>
+                                            <ul class="mb-2">
+                                                <li>Simple: <%= errors.algorithm.availableQuestions.byDifficulty.simple || 0 %></li>
+                                                <li>Difficult: <%= errors.algorithm.availableQuestions.byDifficulty.difficult || 0 %></li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>By Objective:</strong></p>
+                                            <ul class="mb-2">
+                                                <li>Reminding: <%= errors.algorithm.availableQuestions.byObjective.reminding || 0 %></li>
+                                                <li>Understanding: <%= errors.algorithm.availableQuestions.byObjective.understanding || 0 %></li>
+                                                <li>Creativity: <%= errors.algorithm.availableQuestions.byObjective.creativity || 0 %></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <% if (errors.algorithm.availableQuestions.byChapter) { %>
+                                        <p><strong>By Chapter:</strong></p>
+                                        <ul class="mb-0">
+                                            <% Object.entries(errors.algorithm.availableQuestions.byChapter).forEach(([chapterNum, counts]) => { %>
+                                                <li>Chapter <%= chapterNum %>: <%= counts.total %> questions 
+                                                    (Simple: <%= counts.simple %>, Difficult: <%= counts.difficult %>)
+                                                </li>
+                                            <% }); %>
+                                        </ul>
+                                    <% } %>
+                                </div>
                             <% } %>
                         </div>
                     <% } %>
