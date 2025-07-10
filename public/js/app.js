@@ -290,10 +290,24 @@ function initializeExamForm() {
             url: makeRelativeUrl('/exams/generate'),
             method: 'POST',
             data: form.serialize(),
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             success: function(data) {
                 hideSpinner();
                 if (data.success) {
-                    window.location.href = data.redirect;
+                    // Ensure redirect URL is relative
+                    let redirectUrl = data.redirect;
+                    if (redirectUrl) {
+                        // Remove any protocol/host from redirect URL
+                        redirectUrl = redirectUrl.replace(/^https?:\/\/[^\/]+/, '');
+                        // Ensure it starts with /
+                        if (!redirectUrl.startsWith('/')) {
+                            redirectUrl = '/' + redirectUrl;
+                        }
+                        window.location.href = redirectUrl;
+                    }
                 } else {
                     showAlert(data.message || 'Error generating exam', 'danger');
                 }

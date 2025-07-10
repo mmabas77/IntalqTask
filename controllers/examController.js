@@ -297,12 +297,32 @@ class ExamController {
 
             await exam.save();
             req.flash('success', `Exam generated successfully! Fitness score: ${solution.fitness.toFixed(2)}`);
-            res.redirect(`/exams/${exam._id}`);
+            
+            // Check if it's an AJAX request
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                res.json({
+                    success: true,
+                    redirect: `/exams/${exam._id}`,
+                    message: `Exam generated successfully! Fitness score: ${solution.fitness.toFixed(2)}`
+                });
+            } else {
+                res.redirect(`/exams/${exam._id}`);
+            }
 
         } catch (error) {
             console.error('Error generating exam:', error);
             req.flash('error', 'Error generating exam');
-            res.redirect('/exams/create');
+            
+            // Check if it's an AJAX request
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                res.status(500).json({
+                    success: false,
+                    message: 'Error generating exam',
+                    redirect: '/exams/create'
+                });
+            } else {
+                res.redirect('/exams/create');
+            }
         }
     }
 
