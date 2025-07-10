@@ -103,7 +103,6 @@
         <div class="exam-title"><%= exam.title %></div>
         <div class="exam-info">
             Course: <%= exam.courseId.name %> | 
-            Duration: <%= exam.duration %> minutes | 
             Total Questions: <%= questions.length %> |
             Date: <%= new Date().toLocaleDateString() %>
         </div>
@@ -131,7 +130,7 @@
             <li>Read each question carefully before answering</li>
             <li>Choose the best answer for each question</li>
             <li>Mark your answers clearly on the answer sheet</li>
-            <li>Time limit: <%= exam.duration %> minutes</li>
+            <li>No time limit specified</li>
             <li>Total questions: <%= questions.length %></li>
         </ul>
     </div>

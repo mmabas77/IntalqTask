@@ -6,7 +6,10 @@ class ExamController {
     // Display all exams
     async index(req, res) {
         try {
-            const exams = await Exam.find().populate('courseId').sort({ createdAt: -1 });
+            const exams = await Exam.find()
+                .populate('courseId')
+                .populate('selectedQuestions.questionId')
+                .sort({ createdAt: -1 });
             res.render('exams/index', {
                 title: 'Exams',
                 exams: exams
@@ -470,4 +473,17 @@ class ExamController {
     }
 }
 
-module.exports = new ExamController();
+const examController = new ExamController();
+
+// Bind methods to preserve context
+module.exports = {
+    index: examController.index.bind(examController),
+    create: examController.create.bind(examController),
+    generate: examController.generate.bind(examController),
+    show: examController.show.bind(examController),
+    destroy: examController.destroy.bind(examController),
+    export: examController.export.bind(examController),
+    regenerate: examController.regenerate.bind(examController),
+    getCourseInfo: examController.getCourseInfo.bind(examController),
+    validateRequirements: examController.validateRequirements.bind(examController)
+};
