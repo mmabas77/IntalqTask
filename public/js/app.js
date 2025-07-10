@@ -1,6 +1,51 @@
 // Global JavaScript for Exam Design System
 
+// Helper function to ensure URLs use current protocol
+function getCurrentProtocolUrl(path) {
+    // Remove leading slash if present, we'll add it
+    path = path.replace(/^\//, '');
+    return `${window.location.protocol}//${window.location.host}/${path}`;
+}
+
+// Helper function to make protocol-relative URLs
+function makeRelativeUrl(path) {
+    // Ensure path starts with /
+    if (!path.startsWith('/')) {
+        path = '/' + path;
+    }
+    return path;
+}
+
 $(document).ready(function() {
+    // Configure jQuery AJAX to use relative URLs
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            // Ensure URL is relative by stripping protocol and host
+            if (settings.url) {
+                // Remove any absolute URL parts and keep only the path
+                settings.url = settings.url.replace(/^https?:\/\/[^\/]+/, '');
+                // Ensure it starts with /
+                if (!settings.url.startsWith('/')) {
+                    settings.url = '/' + settings.url;
+                }
+            }
+        }
+    });
+
+    // Fix form actions to be relative
+    $('form').each(function() {
+        var action = $(this).attr('action');
+        if (action) {
+            // Remove any protocol/host from action
+            action = action.replace(/^https?:\/\/[^\/]+/, '');
+            // Ensure it starts with /
+            if (!action.startsWith('/')) {
+                action = '/' + action;
+            }
+            $(this).attr('action', action);
+        }
+    });
+    
     // Initialize tooltips
     $('[data-bs-toggle="tooltip"]').tooltip();
     
@@ -62,7 +107,7 @@ $(document).ready(function() {
 function loadCourseInfo(courseId) {
     console.log('Loading course info for:', courseId);
     $.ajax({
-        url: `/exams/course/${courseId}/info`,
+        url: makeRelativeUrl(`/exams/course/${courseId}/info`),
         method: 'GET',
         success: function(data) {
             console.log('Course info loaded:', data);
@@ -194,7 +239,7 @@ function validateExamRequirements() {
     // Server-side validation only if client-side validation passes
     if (isValid && allFieldsFilled) {
         $.ajax({
-            url: '/exams/validate',
+            url: makeRelativeUrl('/exams/validate'),
             method: 'POST',
             data: requirements,
             success: function(data) {
@@ -242,7 +287,7 @@ function initializeExamForm() {
         
         // Submit form
         $.ajax({
-            url: form.attr('action'),
+            url: makeRelativeUrl('/exams/generate'),
             method: 'POST',
             data: form.serialize(),
             success: function(data) {
@@ -268,7 +313,7 @@ function loadChapterStatistics() {
         const element = $(this);
         
         $.ajax({
-            url: `/questions/chapter/${chapterId}/stats`,
+            url: makeRelativeUrl(`/questions/chapter/${chapterId}/stats`),
             method: 'GET',
             success: function(data) {
                 updateChapterStats(element, data);
@@ -398,7 +443,7 @@ function regenerateExam(examId) {
         showSpinner();
         
         $.ajax({
-            url: `/exams/${examId}/regenerate`,
+            url: makeRelativeUrl(`/exams/${examId}/regenerate`),
             method: 'POST',
             success: function() {
                 hideSpinner();
